@@ -23,28 +23,17 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 
 }
 resource "aws_cloudwatch_metric_alarm" "high_connection" {
-<<<<<<< Updated upstream
-  for_each                  = var.high_connection_enabled ? toset(local.cache_nodes_ids) : toset([])
-  alarm_name                = "${var.cache_cluster_id}-node-${each.value}-high-connections"
-  comparison_operator       = "GreaterThanThreshold"
-=======
   for_each                  = toset(local.cache_nodes_ids) * var.high_connection_enabled ? 1 : 0
   alarm_name                = "ElastiCache | ${var.cache_cluster_id} | High Connection"
   comparison_operator       = "LessThanThreshold"
->>>>>>> Stashed changes
   evaluation_periods        = 10
   datapoints_to_alarm       = 10
   metric_name               = "CurrConnections"
   namespace                 = "AWS/ElastiCache"
   period                    = 60
   statistic                 = "Average"
-<<<<<<< Updated upstream
   threshold                 = (var.high_connection_threshold/100) * 65000
   alarm_description         = "Average connections node ${each.value} in cluster ${var.cache_cluster_id} is too high"
-=======
-  threshold                 = (100 - var.high_connection_threshold) * 65000
-  alarm_description         = "High connections in cluster ${var.cache_cluster_id} in node ${each.value}"
->>>>>>> Stashed changes
   alarm_actions             = [var.aws_sns_topic_arn]
   ok_actions                = [var.aws_sns_topic_arn]
   insufficient_data_actions = []
