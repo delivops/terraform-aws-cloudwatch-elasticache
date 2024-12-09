@@ -55,7 +55,7 @@ variable "high_engine_cpu_threshold" {
 variable "cache_cluster_id" {
   description = "The ID of the cache cluster to monitor."
   type        = string
-  
+
 }
 
 variable "aws_sns_topic_arn" {
@@ -72,12 +72,12 @@ variable "high_replication_lag_enabled" {
   description = "Enable high replication lag alarm"
   type        = bool
   default     = true
-  
+
 }
 variable "high_replication_lag_threshold" {
   description = "The threshold for high replication lag"
   type        = number
   default     = 60
-  
+
 }
 
