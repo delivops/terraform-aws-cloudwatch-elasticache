@@ -24,7 +24,7 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 }
 resource "aws_cloudwatch_metric_alarm" "high_connection" {
   for_each                  = toset(local.cache_nodes_ids) * var.high_connection_enabled ? 1 : 0
-  alarm_name                = "ElastiCache | ${var.cache_cluster_id} | High Connection"
+  alarm_name                = "ElastiCache | ${var.cache_cluster_id}/${each.value} | High Connection"
   comparison_operator       = "LessThanThreshold"
   evaluation_periods        = 10
   datapoints_to_alarm       = 10
@@ -32,7 +32,7 @@ resource "aws_cloudwatch_metric_alarm" "high_connection" {
   namespace                 = "AWS/ElastiCache"
   period                    = 60
   statistic                 = "Average"
-  threshold                 = (var.high_connection_threshold/100) * 65000
+  threshold                 = (var.high_connection_threshold / 100) * 65000
   alarm_description         = "Average connections node ${each.value} in cluster ${var.cache_cluster_id} is too high"
   alarm_actions             = [var.aws_sns_topic_arn]
   ok_actions                = [var.aws_sns_topic_arn]
