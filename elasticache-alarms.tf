@@ -23,7 +23,7 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 
 }
 resource "aws_cloudwatch_metric_alarm" "high_connection" {
-  for_each                  = toset(local.cache_nodes_ids) * var.high_connection_enabled ? 1 : 0
+  for_each                  = var.high_connection_enabled ? toset(local.cache_nodes_ids) : toset([])
   alarm_name                = "ElastiCache | ${var.cache_cluster_id}/${each.value} | High Connection"
   comparison_operator       = "LessThanThreshold"
   evaluation_periods        = 10
