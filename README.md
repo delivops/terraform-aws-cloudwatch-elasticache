@@ -44,7 +44,7 @@ module "elasticache-alarms" {
   #version            = "0.0.1"
 
   cache_cluster_id  = var.cache_cluster_id
-  aws_sns_topic_arn = aws_sns_topic.sns_topic.arn
+  aws_sns_topics_arns = [aws_sns_topic.sns_topic.arn]
   depends_on        = [aws_sns_topic.sns_topic]
 }
 

@@ -58,11 +58,12 @@ variable "cache_cluster_id" {
 
 }
 
-variable "aws_sns_topic_arn" {
-  description = "The ARN of the SNS topic to send CloudWatch alarms to."
-  type        = string
-
+variable "aws_sns_topics_arns" {
+  description = "List of ARNs for the SNS topics"
+  type        = list(string)
+  default     = []
 }
+
 variable "tags" {
   description = "A map of tags to add to all resources."
   type        = map(string)
