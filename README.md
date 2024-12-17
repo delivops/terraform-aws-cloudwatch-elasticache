@@ -111,7 +111,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aws_sns_topic_arn"></a> [aws\_sns\_topic\_arn](#input\_aws\_sns\_topic\_arn) | The ARN of the SNS topic to send CloudWatch alarms to. | `string` | n/a | yes |
+| <a name="input_aws_sns_topics_arns"></a> [aws\_sns\_topics\_arns](#input\_aws\_sns\_topics\_arns) | List of ARNs for the SNS topics | `list(string)` | `[]` | no |
 | <a name="input_cache_cluster_id"></a> [cache\_cluster\_id](#input\_cache\_cluster\_id) | The ID of the cache cluster to monitor. | `string` | n/a | yes |
 | <a name="input_high_connection_enabled"></a> [high\_connection\_enabled](#input\_high\_connection\_enabled) | Enable high connection alarm | `bool` | `true` | no |
 | <a name="input_high_connection_threshold"></a> [high\_connection\_threshold](#input\_high\_connection\_threshold) | The threshold for high connection usage | `number` | `60` | no |
