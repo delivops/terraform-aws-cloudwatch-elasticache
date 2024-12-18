@@ -24,10 +24,10 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
 
 }
 resource "aws_cloudwatch_metric_alarm" "high_connection" {
-  for_each                  = toset(local.cache_nodes_ids) * var.high_connection_enabled ? 1 : 0
+  for_each                  = var.high_connection_enabled ? toset(local.cache_nodes_ids) : toset([])
   alarm_name                = "ElastiCache | High Connection Usage (>${var.high_connection_threshold}%) | ${var.cache_cluster_id} | Node ${each.value}"
   alarm_description         = "Average connections node ${each.value} in cluster ${var.cache_cluster_id} is too high"
-  comparison_operator       = "LessThanThreshold"
+  comparison_operator       = "GreaterThanThreshold"
   evaluation_periods        = 5
   datapoints_to_alarm       = 5
   metric_name               = "CurrConnections"
