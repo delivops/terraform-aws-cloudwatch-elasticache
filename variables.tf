@@ -1,3 +1,15 @@
+variable "period" {
+  description = "Granularity of each evaluation period in seconds (e.g. 60, 300). Applies to all alarms."
+  type        = number
+  default     = 300
+}
+
+variable "evaluation_periods" {
+  description = "Number of consecutive breaching periods before an alarm fires. Effective window = period × evaluation_periods. Applies to all alarms."
+  type        = number
+  default     = 5
+}
+
 variable "high_cpu_threshold" {
   description = "The threshold for high CPU usage"
   type        = number
@@ -11,18 +23,6 @@ variable "high_cpu_enabled" {
 
 }
 variable "high_cpu_sns_arns" {
-  description = "A list of SNS topics ARNs to send notifications to."
-  type        = list(string)
-  default     = []
-
-}
-variable "status_check_failed_enabled" {
-  description = "Enable status check failed alarm"
-  type        = bool
-  default     = true
-
-}
-variable "status_check_failed_sns_arns" {
   description = "A list of SNS topics ARNs to send notifications to."
   type        = list(string)
   default     = []
