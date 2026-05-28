@@ -2,9 +2,9 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   count                     = var.high_cpu_enabled ? 1 : 0
   alarm_name                = "ElastiCache | High CPU Utilization (>${var.high_cpu_threshold}%) | ${var.cache_cluster_id}"
   comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = 5
-  datapoints_to_alarm       = 5
-  period                    = 300
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
+  period                    = var.period
   metric_name               = "CPUUtilization"
   namespace                 = "AWS/ElastiCache"
   statistic                 = "Average"
@@ -28,11 +28,11 @@ resource "aws_cloudwatch_metric_alarm" "high_connection" {
   alarm_name                = "ElastiCache | High Connection Usage (>${var.high_connection_threshold}%) | ${var.cache_cluster_id} | Node ${each.value}"
   alarm_description         = "Average connections node ${each.value} in cluster ${var.cache_cluster_id} is too high"
   comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = 5
-  datapoints_to_alarm       = 5
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
   metric_name               = "CurrConnections"
   namespace                 = "AWS/ElastiCache"
-  period                    = 300
+  period                    = var.period
   statistic                 = "Average"
   threshold                 = (var.high_connection_threshold / 100) * 65000
   alarm_actions             = concat(var.high_connection_sns_arns, var.all_alarms_sns_arns)
@@ -55,10 +55,11 @@ resource "aws_cloudwatch_metric_alarm" "high_memory" {
   alarm_name                = "ElastiCache | High Memory Usage (>${var.high_memory_threshold}%) | ${var.cache_cluster_id}"
   alarm_description         = "High Memory in ${var.cache_cluster_id}"
   comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = "5"
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
   metric_name               = "DatabaseMemoryUsagePercentage"
   namespace                 = "AWS/ElastiCache"
-  period                    = 60
+  period                    = var.period
   statistic                 = "Average"
   threshold                 = var.high_memory_threshold
   alarm_actions             = concat(var.high_memory_sns_arns, var.all_alarms_sns_arns)
@@ -76,16 +77,41 @@ resource "aws_cloudwatch_metric_alarm" "high_memory" {
 
 }
 
+resource "aws_cloudwatch_metric_alarm" "high_evictions" {
+  count                     = var.high_evictions_enabled ? 1 : 0
+  alarm_name                = "ElastiCache | High Evictions (>${var.high_evictions_threshold}) | ${var.cache_cluster_id}"
+  alarm_description         = "Keys are being evicted in ${var.cache_cluster_id} because memory is full"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
+  metric_name               = "Evictions"
+  namespace                 = "AWS/ElastiCache"
+  period                    = var.period
+  statistic                 = "Sum"
+  threshold                 = var.high_evictions_threshold
+  alarm_actions             = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  ok_actions                = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  insufficient_data_actions = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  treat_missing_data        = "breaching"
+  dimensions = {
+    CacheClusterId = var.cache_cluster_id
+  }
+  tags = merge(var.tags, {
+    "CacheClusterId" = var.cache_cluster_id,
+    "Terraform"      = "true"
+  })
+}
+
 resource "aws_cloudwatch_metric_alarm" "high_engine_cpu" {
   count                     = var.high_engine_cpu_enabled ? 1 : 0
   alarm_name                = "ElastiCache | High Engine CPU Utilization (>${var.high_engine_cpu_threshold}%) | ${var.cache_cluster_id}"
   alarm_description         = "High CPU Engine in ${var.cache_cluster_id}"
   comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = 5
-  datapoints_to_alarm       = 5
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
   metric_name               = "EngineCPUUtilization"
   namespace                 = "AWS/ElastiCache"
-  period                    = 300
+  period                    = var.period
   statistic                 = "Maximum"
   threshold                 = var.high_engine_cpu_threshold
   alarm_actions             = concat(var.high_engine_cpu_sns_arns, var.all_alarms_sns_arns)
@@ -106,11 +132,11 @@ resource "aws_cloudwatch_metric_alarm" "high_replication_lag" {
   alarm_name                = "ElastiCache | High Replication Lag (>${var.high_replication_lag_threshold}) | ${var.cache_cluster_id}"
   alarm_description         = "High Replication lag in ${var.cache_cluster_id}"
   comparison_operator       = "GreaterThanThreshold"
-  evaluation_periods        = 5
-  datapoints_to_alarm       = 5
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
   metric_name               = "ReplicationLag"
   namespace                 = "AWS/ElastiCache"
-  period                    = 300
+  period                    = var.period
   statistic                 = "Maximum"
   threshold                 = var.high_replication_lag_threshold
   alarm_actions             = concat(var.high_replication_lag_sns_arns, var.all_alarms_sns_arns)

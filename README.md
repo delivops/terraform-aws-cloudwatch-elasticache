@@ -61,6 +61,8 @@ High Connection Count: Triggers when connection count reaches high levels.
 
 High Memory Usage: Triggers when memory usage exceeds the defined threshold.
 
+High Evictions: Triggers when keys are evicted because memory is full.
+
 High Engine CPU Usage: Triggers when engine CPU usage is too high.
 
 High Replication Lag: Triggers when replication lag exceeds the defined threshold.
@@ -75,6 +77,8 @@ High Connection Count: Investigate connection patterns and consider increasing t
 
 High Memory Usage: Review memory usage patterns, consider optimizing the cache, or increasing memory capacity.
 
+High Evictions: Memory is full and keys are being dropped. Increase node memory, scale out, or review your eviction policy and key TTLs.
+
 High Engine CPU Usage: Look into query performance and optimize heavy queries or spread load across multiple nodes.
 
 High Replication Lag: Check the replication status and network health. You may need to increase the replication instance size or troubleshoot network bottlenecks.
@@ -84,13 +88,13 @@ High Replication Lag: Check the replication status and network health. You may n
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.67.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0 |
 
 ## Modules
 
@@ -103,6 +107,7 @@ No modules.
 | [aws_cloudwatch_metric_alarm.high_connection](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.high_cpu](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.high_engine_cpu](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_cloudwatch_metric_alarm.high_evictions](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.high_memory](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_cloudwatch_metric_alarm.high_replication_lag](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_elasticache_cluster.elasticache_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/elasticache_cluster) | data source |
@@ -113,6 +118,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_all_alarms_sns_arns"></a> [all\_alarms\_sns\_arns](#input\_all\_alarms\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
 | <a name="input_cache_cluster_id"></a> [cache\_cluster\_id](#input\_cache\_cluster\_id) | The ID of the cache cluster to monitor. | `string` | n/a | yes |
+| <a name="input_evaluation_periods"></a> [evaluation\_periods](#input\_evaluation\_periods) | Number of consecutive breaching periods before an alarm fires. Effective window = period × evaluation\_periods. Applies to all alarms. | `number` | `5` | no |
 | <a name="input_high_connection_enabled"></a> [high\_connection\_enabled](#input\_high\_connection\_enabled) | Enable high connection alarm | `bool` | `true` | no |
 | <a name="input_high_connection_sns_arns"></a> [high\_connection\_sns\_arns](#input\_high\_connection\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
 | <a name="input_high_connection_threshold"></a> [high\_connection\_threshold](#input\_high\_connection\_threshold) | The threshold for high connection usage | `number` | `60` | no |
@@ -122,17 +128,26 @@ No modules.
 | <a name="input_high_engine_cpu_enabled"></a> [high\_engine\_cpu\_enabled](#input\_high\_engine\_cpu\_enabled) | Enable high engine CPU alarm | `bool` | `true` | no |
 | <a name="input_high_engine_cpu_sns_arns"></a> [high\_engine\_cpu\_sns\_arns](#input\_high\_engine\_cpu\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
 | <a name="input_high_engine_cpu_threshold"></a> [high\_engine\_cpu\_threshold](#input\_high\_engine\_cpu\_threshold) | The threshold for high engine CPU usage | `number` | `90` | no |
+| <a name="input_high_evictions_enabled"></a> [high\_evictions\_enabled](#input\_high\_evictions\_enabled) | Enable high evictions alarm | `bool` | `true` | no |
+| <a name="input_high_evictions_sns_arns"></a> [high\_evictions\_sns\_arns](#input\_high\_evictions\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
+| <a name="input_high_evictions_threshold"></a> [high\_evictions\_threshold](#input\_high\_evictions\_threshold) | The threshold for evictions (keys evicted per period because memory is full) | `number` | `0` | no |
 | <a name="input_high_memory_enabled"></a> [high\_memory\_enabled](#input\_high\_memory\_enabled) | Enable high memory alarm | `bool` | `true` | no |
 | <a name="input_high_memory_sns_arns"></a> [high\_memory\_sns\_arns](#input\_high\_memory\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
 | <a name="input_high_memory_threshold"></a> [high\_memory\_threshold](#input\_high\_memory\_threshold) | The threshold for high memory usage | `number` | `90` | no |
 | <a name="input_high_replication_lag_enabled"></a> [high\_replication\_lag\_enabled](#input\_high\_replication\_lag\_enabled) | Enable high replication lag alarm | `bool` | `true` | no |
 | <a name="input_high_replication_lag_sns_arns"></a> [high\_replication\_lag\_sns\_arns](#input\_high\_replication\_lag\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
 | <a name="input_high_replication_lag_threshold"></a> [high\_replication\_lag\_threshold](#input\_high\_replication\_lag\_threshold) | The threshold for high replication lag | `number` | `60` | no |
-| <a name="input_status_check_failed_enabled"></a> [status\_check\_failed\_enabled](#input\_status\_check\_failed\_enabled) | Enable status check failed alarm | `bool` | `true` | no |
-| <a name="input_status_check_failed_sns_arns"></a> [status\_check\_failed\_sns\_arns](#input\_status\_check\_failed\_sns\_arns) | A list of SNS topics ARNs to send notifications to. | `list(string)` | `[]` | no |
+| <a name="input_period"></a> [period](#input\_period) | Granularity of each evaluation period in seconds (e.g. 60, 300). Applies to all alarms. | `number` | `300` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources. | `map(string)` | `{}` | no |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_high_connection_alarm_arns"></a> [high\_connection\_alarm\_arns](#output\_high\_connection\_alarm\_arns) | Map of cache node ID to ARN of the high connection usage alarm (empty map when disabled). |
+| <a name="output_high_cpu_alarm_arn"></a> [high\_cpu\_alarm\_arn](#output\_high\_cpu\_alarm\_arn) | ARN of the high CPU utilization alarm (empty string when disabled). |
+| <a name="output_high_engine_cpu_alarm_arn"></a> [high\_engine\_cpu\_alarm\_arn](#output\_high\_engine\_cpu\_alarm\_arn) | ARN of the high engine CPU utilization alarm (empty string when disabled). |
+| <a name="output_high_evictions_alarm_arn"></a> [high\_evictions\_alarm\_arn](#output\_high\_evictions\_alarm\_arn) | ARN of the high evictions alarm (empty string when disabled). |
+| <a name="output_high_memory_alarm_arn"></a> [high\_memory\_alarm\_arn](#output\_high\_memory\_alarm\_arn) | ARN of the high memory usage alarm (empty string when disabled). |
+| <a name="output_high_replication_lag_alarm_arn"></a> [high\_replication\_lag\_alarm\_arn](#output\_high\_replication\_lag\_alarm\_arn) | ARN of the high replication lag alarm (empty string when disabled). |
 <!-- END_TF_DOCS -->
