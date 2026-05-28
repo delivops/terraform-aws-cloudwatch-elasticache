@@ -13,6 +13,11 @@ output "high_memory_alarm_arn" {
   value       = length(aws_cloudwatch_metric_alarm.high_memory) > 0 ? aws_cloudwatch_metric_alarm.high_memory[0].arn : ""
 }
 
+output "high_evictions_alarm_arn" {
+  description = "ARN of the high evictions alarm (empty string when disabled)."
+  value       = length(aws_cloudwatch_metric_alarm.high_evictions) > 0 ? aws_cloudwatch_metric_alarm.high_evictions[0].arn : ""
+}
+
 output "high_engine_cpu_alarm_arn" {
   description = "ARN of the high engine CPU utilization alarm (empty string when disabled)."
   value       = length(aws_cloudwatch_metric_alarm.high_engine_cpu) > 0 ? aws_cloudwatch_metric_alarm.high_engine_cpu[0].arn : ""

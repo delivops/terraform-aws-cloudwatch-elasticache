@@ -64,6 +64,24 @@ variable "high_memory_sns_arns" {
   default     = []
 
 }
+variable "high_evictions_enabled" {
+  description = "Enable high evictions alarm"
+  type        = bool
+  default     = true
+
+}
+variable "high_evictions_threshold" {
+  description = "The threshold for evictions (keys evicted per period because memory is full)"
+  type        = number
+  default     = 0
+
+}
+variable "high_evictions_sns_arns" {
+  description = "A list of SNS topics ARNs to send notifications to."
+  type        = list(string)
+  default     = []
+
+}
 variable "high_engine_cpu_enabled" {
   description = "Enable high engine CPU alarm"
   type        = bool

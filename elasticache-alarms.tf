@@ -77,6 +77,31 @@ resource "aws_cloudwatch_metric_alarm" "high_memory" {
 
 }
 
+resource "aws_cloudwatch_metric_alarm" "high_evictions" {
+  count                     = var.high_evictions_enabled ? 1 : 0
+  alarm_name                = "ElastiCache | High Evictions (>${var.high_evictions_threshold}) | ${var.cache_cluster_id}"
+  alarm_description         = "Keys are being evicted in ${var.cache_cluster_id} because memory is full"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = var.evaluation_periods
+  datapoints_to_alarm       = var.evaluation_periods
+  metric_name               = "Evictions"
+  namespace                 = "AWS/ElastiCache"
+  period                    = var.period
+  statistic                 = "Sum"
+  threshold                 = var.high_evictions_threshold
+  alarm_actions             = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  ok_actions                = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  insufficient_data_actions = concat(var.high_evictions_sns_arns, var.all_alarms_sns_arns)
+  treat_missing_data        = "breaching"
+  dimensions = {
+    CacheClusterId = var.cache_cluster_id
+  }
+  tags = merge(var.tags, {
+    "CacheClusterId" = var.cache_cluster_id,
+    "Terraform"      = "true"
+  })
+}
+
 resource "aws_cloudwatch_metric_alarm" "high_engine_cpu" {
   count                     = var.high_engine_cpu_enabled ? 1 : 0
   alarm_name                = "ElastiCache | High Engine CPU Utilization (>${var.high_engine_cpu_threshold}%) | ${var.cache_cluster_id}"
